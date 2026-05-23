@@ -21,7 +21,7 @@ public class UsuarioController {
     private PasswordEncoder passwordEncoder;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'SUPERVISOR')")
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         return ResponseEntity.ok(usuarioRepository.findAll());
     }
@@ -43,6 +43,7 @@ public class UsuarioController {
             if (usuarioDetails.getContraseña() != null && !usuarioDetails.getContraseña().isEmpty()) {
                 usuario.setContraseña(passwordEncoder.encode(usuarioDetails.getContraseña()));
             }
+            usuario.setFotoPerfil(usuarioDetails.getFotoPerfil());
             return ResponseEntity.ok(usuarioRepository.save(usuario));
         }).orElse(ResponseEntity.notFound().build());
     }

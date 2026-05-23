@@ -22,13 +22,18 @@ public class AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private com.proyectoarq.repository.UsuarioRepository usuarioRepository;
+
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getCorreo(), request.getContraseña())
         );
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
-        final String jwt = jwtUtil.generateToken(userDetails);
+        final com.proyectoarq.model.Usuario user = usuarioRepository.findByCorreo(request.getCorreo()).orElse(null);
+        final String nombre = (user != null) ? user.getNombre() : userDetails.getUsername();
+        final String jwt = jwtUtil.generateToken(userDetails, nombre);
 
         return new AuthResponse(jwt);
     }

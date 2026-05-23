@@ -1,63 +1,66 @@
-# ProyectoArq - Gestión y Trazabilidad de Carga
+# Trazabilidad Agrónoma - Sistema de Gestión de Boletas
 
-Este proyecto es un sistema de trazabilidad logística que permite gestionar boletas digitales, seguimiento mediante GPS y escaneo de códigos QR, con soporte offline-first para trabajadores en campo.
+Sistema integral de trazabilidad logística diseñado para el control de cargas agrícolas, seguimiento en tiempo real de viajes y gestión de boletas digitales con soporte offline.
 
-## Arquitectura
-- **Backend:** Spring Boot 3 + PostgreSQL.
-- **Frontend:** React (Vite) + TypeScript + Dexie (IndexedDB).
+## 🚀 Arquitectura y Stack
 
-## Requisitos
-- Java 21+
-- Node.js 18+
-- PostgreSQL (Base de datos: `proyectoarq_db`)
+El proyecto utiliza una arquitectura de **Monolito Modular** con una clara separación entre el núcleo de negocio en el backend y una interfaz de usuario reactiva y adaptativa.
 
-## Instalación y Ejecución Paso a Paso
+- **Backend:** 
+  - Spring Boot 3.3
+  - Java 21
+  - Spring Security + JWT
+  - Spring Data JPA (PostgreSQL)
+  - Lombok & Maven
+- **Frontend:**
+  - React 19 + TypeScript
+  - Vite (Build Tool)
+  - Lucide React (Iconografía)
+  - Dexie.js (Soporte Offline / IndexedDB)
+  - CSS3 (Vanilla con variables y Flexbox/Grid)
+- **Infraestructura:**
+  - Docker Ready (Opcional)
+  - PostgreSQL 16+
 
-### 1. Preparar la Base de Datos (PostgreSQL)
-Asegúrate de tener PostgreSQL instalado y en ejecución. Crea la base de datos requerida:
-```sql
-CREATE DATABASE proyectoarq_db;
-```
-*Nota: El backend creará las tablas automáticamente al iniciar (hibernate ddl-auto: update).*
+## 🛠️ Funcionalidades Principales
 
-### 2. Levantar el Backend (Spring Boot)
-Abre una terminal en la carpeta raíz del proyecto y ejecuta:
-```powershell
-cd backend
-# Si 'mvn' no está en tu PATH, usa la ruta absoluta:
-& "C:\Users\hygro\.m2\wrapper\dists\apache-maven-3.9.15\0226a00282e400185496f3b60ec5a3f029cbdc6893912937d4876d57695224e1\bin\mvn.cmd" spring-boot:run
-```
-El servidor estará disponible en: `http://localhost:8080`
+1.  **Gestión de Boletas:** Ciclo de vida completo desde la creación hasta la entrega final.
+2.  **QR Inteligente:** Generación dinámica de códigos QR para validación rápida en puntos de control.
+3.  **Rastreo GPS:** Captura automática de geolocalización del transporte durante el viaje.
+4.  **Soporte Offline-First:** Las operaciones realizadas sin conexión se almacenan localmente y se sincronizan automáticamente al recuperar la red.
+5.  **Dashboard Adaptativo:**
+    - **PC:** Vista extendida con Sidebar lateral para Administradores.
+    - **Móvil:** Interfaz compacta tipo App Nativa con navegación inferior para Choferes.
 
-### 3. Levantar el Frontend (React + Vite)
-Abre **otra** terminal en la carpeta raíz del proyecto y ejecuta:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-La aplicación estará disponible en: `http://localhost:5173`
+## 📋 Requisitos Previos
 
----
+- **Java 21+** instalado.
+- **Node.js 20+** instalado.
+- **PostgreSQL** configurado con una base de datos llamada `proyectoarq_db`.
 
-## Credenciales de Prueba
-El sistema se inicia con los siguientes usuarios precargados para pruebas:
+## ⚙️ Instalación y Arranque
 
-| Rol | Usuario (Email) | Contraseña |
+Para una guía rápida de configuración local, consulte el archivo **`arranque`** en la raíz del proyecto.
+
+1.  **Backend:**
+    ```bash
+    cd backend
+    ./mvnw spring-boot:run
+    ```
+2.  **Frontend:**
+    ```bash
+    cd frontend
+    npm install
+    npm run dev
+    ```
+
+## 🔒 Credenciales por Defecto
+
+| Rol | Usuario | Contraseña |
 | :--- | :--- | :--- |
-| **Administrador** | `admin@test.com` | `admin123` |
-| **Supervisor** | `supervisor@test.com` | `super123` |
-| **Chofer** | `juan@test.com` | `juan123` |
+| Administrador | `admin@test.com` | `admin123` |
+| Supervisor | `supervisor@test.com` | `super123` |
+| Chofer | `juan@test.com` | `juan123` |
 
 ---
-
-## Funcionalidades Clave
-- **Autenticación JWT:** Roles diferenciados para cada tipo de usuario.
-- **Gestión de Boletas:** Creación, edición y consulta de guías de carga.
-- **QR Dinámico:** Generación automática de QR por cada boleta para escaneo en puntos de control.
-- **Modo Offline:** Soporte para trabajar sin internet (Dexie/IndexedDB) y sincronización posterior.
-- **GPS Tracking:** Seguimiento en tiempo real de la ubicación del viaje.
-- **Reportes:** Generación de resúmenes de actividad.
-
-## Validación (Tracer Bullet)
-Se ha incluido un test de integración en `backend/src/test/java/com/proyectoarq/TracerBulletTest.java` que valida el flujo completo de autenticación, creación de boletas y generación de QR.
+Desarrollado con enfoque en robustez y experiencia de usuario para entornos rurales.

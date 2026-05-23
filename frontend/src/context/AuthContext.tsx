@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 
 interface AuthContextType {
   token: string | null;
-  user: { correo: string; rol: string } | null;
+  user: { correo: string; rol: string; nombre: string } | null;
   login: (token: string) => void;
   logout: () => void;
 }
@@ -21,7 +21,8 @@ const parseJwt = (token: string) => {
     const rawRol = payload.roles && payload.roles.length > 0 ? payload.roles[0].authority : '';
     return {
       correo: payload.sub,
-      rol: rawRol.replace('ROLE_', '')
+      rol: rawRol.replace('ROLE_', ''),
+      nombre: payload.nombre || payload.sub
     };
   } catch (e) {
     return null;
@@ -30,7 +31,7 @@ const parseJwt = (token: string) => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [user, setUser] = useState<{ correo: string; rol: string } | null>(
+  const [user, setUser] = useState<{ correo: string; rol: string; nombre: string } | null>(
     token ? parseJwt(token) : null
   );
 

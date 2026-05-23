@@ -11,11 +11,13 @@ C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\repos
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\BackendApplication.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\security\UserDetailsServiceImpl.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\repository\VehiculoRepository.java
+C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\model\Flota.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\model\Viaje.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\service\BoletaService.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\controller\ViajeController.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\service\ViajeService.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\model\Rol.java
+C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\controller\FlotaController.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\model\Vehiculo.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\controller\VehiculoController.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\repository\BoletaRepository.java
@@ -27,4 +29,5 @@ C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\servi
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\repository\UsuarioRepository.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\security\JwtAuthenticationFilter.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\controller\BoletaController.java
+C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\repository\FlotaRepository.java
 C:\Users\hygro\Documents\ProyectoArq\backend\src\main\java\com\proyectoarq\security\SecurityConfig.java

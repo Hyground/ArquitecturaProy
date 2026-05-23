@@ -17,23 +17,31 @@ public class VehiculoController {
     private VehiculoRepository vehiculoRepository;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'SUPERVISOR')")
     public ResponseEntity<List<Vehiculo>> listarVehiculos() {
         return ResponseEntity.ok(vehiculoRepository.findAll());
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'SUPERVISOR')")
     public ResponseEntity<Vehiculo> crearVehiculo(@RequestBody Vehiculo vehiculo) {
         return ResponseEntity.ok(vehiculoRepository.save(vehiculo));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('SUPERVISOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'SUPERVISOR')")
     public ResponseEntity<Vehiculo> actualizarVehiculo(@PathVariable Long id, @RequestBody Vehiculo details) {
         return vehiculoRepository.findById(id).map(v -> {
             v.setPlaca(details.getPlaca());
+            v.setMarca(details.getMarca());
+            v.setModelo(details.getModelo());
+            v.setAnio(details.getAnio());
+            v.setFoto(details.getFoto());
             v.setEstado(details.getEstado());
             v.setConductor(details.getConductor());
+            if (details.getFlota() != null) {
+                v.setFlota(details.getFlota());
+            }
             return ResponseEntity.ok(vehiculoRepository.save(v));
         }).orElse(ResponseEntity.notFound().build());
     }

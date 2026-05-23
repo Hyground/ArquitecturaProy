@@ -50,14 +50,12 @@ public class BoletaController {
         boleta.setOrigen(details.getOrigen());
         boleta.setDestino(details.getDestino());
         boleta.setEstado(details.getEstado());
-        // Se puede añadir un repo.save directamente aquí o vía service
-        return ResponseEntity.ok(boletaService.crearBoleta(boleta)); // crearBoleta hace el save
+        return ResponseEntity.ok(boletaService.crearBoleta(boleta));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminarBoleta(@PathVariable Long id) {
-        // Nota: en un sistema real habría que manejar la cascada con Viajes
         boletaService.eliminarBoleta(id);
         return ResponseEntity.ok().build();
     }
