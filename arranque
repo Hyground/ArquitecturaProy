@@ -1,58 +1,68 @@
-# ProyectoArq - Gestión y Trazabilidad de Carga
+# 🚀 Guía de Arranque Rápido - ProyectoArq
 
-Este proyecto es un sistema de trazabilidad logística que permite gestionar boletas digitales, seguimiento mediante GPS y escaneo de códigos QR, con soporte offline-first para trabajadores en campo.
+Este documento contiene las instrucciones necesarias para levantar tanto el **Backend** como el **Frontend** de forma forzada, utilizando la configuración local de Maven.
 
-## Arquitectura
-- **Backend:** Spring Boot 3 + PostgreSQL.
-- **Frontend:** React (Vite) + TypeScript + Dexie (IndexedDB).
+---
 
-## Requisitos
-- Java 21+
-- Node.js 18+
+## 🛠️ Estado Actual del Sistema
+- **Java:** Versión 21 (C:\Program Files\Java\jdk-21.0.10)
+- **Maven Local:** Instalado en `.\apache-maven-3.9.6`
+- **Frontend:** React + Vite (Puerto 5173)
+- **Backend:** Spring Boot (Puerto 8080)
 
-## Instalación y Ejecución Paso a Paso
+---
 
-### 1. Levantar el Backend (Spring Boot)
-El backend está configurado con **H2 (In-memory)** para un arranque inmediato sin bases de datos externas. Los datos de prueba se precargan automáticamente.
+## ⚡ Comandos de Inicio (Copia y Pega)
 
-Abre una terminal en la carpeta raíz del proyecto y ejecuta:
+### 1. Iniciar Backend (Spring Boot)
+Abre una terminal PowerShell en la raíz del proyecto:
 ```powershell
+# Configurar Maven local y arrancar
+$env:PATH += ";$PWD\apache-maven-3.9.6\bin"
 cd backend
-# Usar el wrapper de Maven incluido o local:
-./mvnw spring-boot:run
+mvn spring-boot:run
 ```
-*Si tienes problemas con mvnw, usa la ruta absoluta de Maven en tu sistema.*
 
-El servidor estará disponible en: `http://localhost:8080`
-La consola de H2 está en: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:proyectoarq_db`, sin contraseña).
-
-### 2. Levantar el Frontend (React + Vite)
-Abre **otra** terminal en la carpeta raíz del proyecto y ejecuta:
-```bash
+### 2. Iniciar Frontend (Vite)
+Abre **otra** terminal PowerShell en la raíz del proyecto:
+```powershell
 cd frontend
-npm install
 npm run dev
 ```
-La aplicación estará disponible en: `http://localhost:5173`
 
 ---
 
-## Credenciales de Prueba
-| Rol | Usuario (Email) | Contraseña |
+## 📝 Script de Inicio Automático
+Si quieres arrancar ambos con un solo clic, crea un archivo llamado `iniciar_todo.ps1` con este contenido:
+
+```powershell
+# Definir ruta de Maven local
+$env:PATH += ";$PWD\apache-maven-3.9.6\bin"
+
+# Iniciar Backend en una nueva ventana
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd backend; mvn spring-boot:run"
+
+# Iniciar Frontend en una nueva ventana
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd frontend; npm run dev"
+```
+
+---
+
+## 🔐 Credenciales y Acceso
+- **URL Frontend:** [http://localhost:5173](http://localhost:5173)
+- **URL Backend:** [http://localhost:8080](http://localhost:8080)
+- **DB (H2 Console):** [http://localhost:8080/h2-console](http://localhost:8080/h2-console) (Solo si está en modo test)
+
+| Usuario | Contraseña | Rol |
 | :--- | :--- | :--- |
-| **Administrador** | `admin@test.com` | `admin123` |
-| **Supervisor** | `supervisor@test.com` | `super123` |
-| **Chofer** | `juan@test.com` | `juan123` |
+| `admin@test.com` | `admin123` | Administrador |
+| `supervisor@test.com` | `super123` | Supervisor |
+| `juan@test.com` | `juan123` | Chofer |
 
 ---
 
-## Funcionalidades Clave
-- **Autenticación JWT:** Seguridad robusta con roles diferenciados.
-- **Reportes Analíticos:** Dashboard con gráficas y exportación a **PDF y Excel**.
-- **Gestión Logística:** Control de flota, conductores y vehículos.
-- **QR & GPS:** Generación de códigos QR y seguimiento de ubicación en tiempo real.
-- **Modo Offline:** Persistencia local vía IndexedDB para zonas sin cobertura.
-
-
-## Validación (Tracer Bullet)
-Se ha incluido un test de integración en `backend/src/test/java/com/proyectoarq/TracerBulletTest.java` que valida el flujo completo de autenticación, creación de boletas y generación de QR.
+## ⚠️ Notas Importantes
+- **No cierres las terminales** mientras usas la aplicación.
+- Si el backend falla por conexión a base de datos, asegúrate de que **PostgreSQL** esté corriendo y la base de datos `proyectoarq_db` exista.
+- La instalación de Maven es local (`.\apache-maven-3.9.6`), no es necesario instalarlo en Windows globalmente.
+        

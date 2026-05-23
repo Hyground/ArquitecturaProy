@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/proyectoarq_db
     username: postgres
-    password: admin
+    password: Oreo_2005
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
