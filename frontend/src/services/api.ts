@@ -1,15 +1,33 @@
 import axios from 'axios';
 import { db } from './db';
 
-const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
-});
+const SERVICES = {
+  USER_CORE: 'http://localhost:8081/api',
+  BOLETAS: 'http://localhost:8082/api',
+  FLOTA: 'http://localhost:8083/api',
+};
+
+// Función para determinar a qué microservicio enviar la petición
+const getBaseURL = (url: string | undefined): string => {
+  if (!url) return SERVICES.BOLETAS;
+  if (url.startsWith('/auth') || url.startsWith('/usuarios')) return SERVICES.USER_CORE;
+  if (url.startsWith('/boletas') || url.startsWith('/viajes')) return SERVICES.BOLETAS;
+  if (url.startsWith('/flotas') || url.startsWith('/vehiculos') || url.startsWith('/reportes')) return SERVICES.FLOTA;
+  return SERVICES.BOLETAS; // Default
+};
+
+const api = axios.create();
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+  // Encaminamiento dinámico basado en la ruta
+  const baseURL = getBaseURL(config.url);
+  config.url = `${baseURL}${config.url}`;
+  
   return config;
 });
 
@@ -17,11 +35,10 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (!error.response || error.code === 'ERR_NETWORK') {
-      // Network Error - probably offline
       const { config } = error;
-      // Only store data-mutating requests
       if (config.method === 'post' || config.method === 'put' || config.method === 'patch') {
-        const urlPath = config.url?.replace('http://localhost:8080/api', '') || '';
+        // Guardamos el path relativo sin el baseURL inyectado
+        const urlPath = config.url || '';
         
         await db.offlineRequests.add({
           url: urlPath,
@@ -55,13 +72,11 @@ export const syncOfflineRequests = async () => {
       console.log(`Sincronizado: ${req.url}`);
     } catch (e) {
       console.error(`Error al sincronizar: ${req.url}`, e);
-      // Stop sync if we hit a server error to preserve order
       break; 
     }
   }
 };
 
-// Automatic sync when coming back online
 window.addEventListener('online', syncOfflineRequests);
 
 export default api;

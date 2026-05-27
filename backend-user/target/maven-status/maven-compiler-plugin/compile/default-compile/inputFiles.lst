@@ -1,0 +1,14 @@
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\model\Usuario.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\security\JwtUtil.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\security\SecurityConfig.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\UserApplication.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\service\AuthService.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\repository\UsuarioRepository.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\dto\AuthResponse.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\security\UserDetailsServiceImpl.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\dto\LoginRequest.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\model\Rol.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\controller\UsuarioController.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\security\JwtAuthenticationFilter.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\controller\SyncController.java
+C:\Users\hygro\OneDrive\Desktop\ArquitecturaProy\backend-user\src\main\java\com\proyectoarq\user\controller\AuthController.java
