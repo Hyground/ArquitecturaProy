@@ -14,18 +14,34 @@ if not exist "%PROJECT_ROOT%frontend\node_modules\" (
     cd /d "%PROJECT_ROOT%"
 )
 
-:: 2. Recordatorio de Base de Datos
+:: 2. Levantar Bases de Datos con Docker
 echo.
-echo [ATENCION] Asegurate de que PostgreSQL este CORRIENDO en el puerto 5432.
-echo [ATENCION] Debes haber creado las siguientes bases de datos manualmente:
-echo    - backend_user_db
-echo    - backend_boletas_db
-echo    - backend_flota_db
-echo.
-echo Si no las has creado, los backends fallaran al iniciar.
-echo.
-pause
+echo [+] Levantando bases de datos en Docker...
+docker-compose up -d
 
+if %ERRORLEVEL% NEQ 0 (
+    echo [!] Reintentando con 'docker compose'...
+    docker compose up -d
+)
+
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] No se pudo iniciar Docker Compose. Asegurate de que Docker este instalado y corriendo.
+    pause
+    exit /b %ERRORLEVEL%
+)
+
+echo.
+echo [+] Esperando a que las bases de datos esten listas...
+:wait_for_db
+docker inspect -f {{.State.Health.Status}} proyecto-postgres 2>nul | findstr "healthy" > nul
+if %ERRORLEVEL% NEQ 0 (
+    echo [.] Esperando a PostgreSQL...
+    timeout /t 3 /nobreak > nul
+    goto wait_for_db
+)
+echo [+] Bases de datos listas y saludables.
+
+echo.
 echo ========================================
 echo   INICIANDO MICROSERVICIOS
 echo ========================================
@@ -34,7 +50,7 @@ echo ========================================
 echo [+] Iniciando Backend User (8081)...
 start "Backend-User" cmd /k "cd /d "%PROJECT_ROOT%backend-user" && "%MVN_BIN%" spring-boot:run"
 
-timeout /t 8 /nobreak > nul
+timeout /t 5 /nobreak > nul
 
 :: Iniciar Boletas
 echo [+] Iniciando Backend Boletas (8082)...
@@ -54,5 +70,11 @@ echo.
 echo ========================================
 echo   SISTEMA EN MARCHA
 echo ========================================
+echo.
+echo Puedes acceder a:
+echo - Frontend: http://localhost:5173 (o el puerto que asigne Vite)
+echo - Backend User: http://localhost:8081
+echo - Backend Boletas: http://localhost:8082
+echo - Backend Flota: http://localhost:8083
 echo.
 pause

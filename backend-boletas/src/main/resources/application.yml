@@ -2,9 +2,9 @@ spring:
   application:
     name: backend-boletas
   datasource:
-    url: jdbc:postgresql://localhost:5432/backend_boletas_db
-    username: postgres
-    password: Oreo_2005
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/backend_boletas_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:Oreo_2005}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
