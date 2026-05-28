@@ -69,6 +69,16 @@ const DriverPage: React.FC = () => {
     }
   }, [location, activeViaje]);
 
+  const [manualCode, setManualCode] = useState('');
+
+  const handleManualSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (manualCode.trim()) {
+      handleScanSuccess(manualCode.trim());
+      setManualCode('');
+    }
+  };
+
   return (
     <div className="animate-slide-up">
       <header style={{ marginBottom: '2rem' }}>
@@ -82,11 +92,26 @@ const DriverPage: React.FC = () => {
             <Camera color="var(--primary)" size={32} />
           </div>
           <h3>Iniciar Nuevo Viaje</h3>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Escanea el código QR de la boleta física para comenzar el rastreo.</p>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Escanea el código QR o ingresa el código manualmente para comenzar.</p>
           
-          <button className="btn btn-primary" onClick={() => setScanning(true)} style={{ width: 'auto', padding: '1rem 2rem' }}>
-            Abrir Cámara para Escaneo
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+            <button className="btn btn-primary" onClick={() => setScanning(true)} style={{ width: '100%', maxWidth: '300px', padding: '1rem' }}>
+              Abrir Cámara para Escaneo
+            </button>
+            
+            <div style={{ width: '100%', maxWidth: '300px', display: 'flex', gap: '8px', marginTop: '1rem' }}>
+              <input 
+                type="text" 
+                placeholder="Código Manual" 
+                value={manualCode} 
+                onChange={e => setManualCode(e.target.value)}
+                style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'white' }}
+              />
+              <button className="btn btn-secondary" onClick={handleManualSubmit} style={{ padding: '0.75rem' }}>
+                Ir
+              </button>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="active-trip-view">

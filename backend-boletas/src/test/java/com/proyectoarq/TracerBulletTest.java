@@ -1,60 +1,45 @@
 package com.proyectoarq;
 
-import com.proyectoarq.dto.AuthResponse;
-import com.proyectoarq.dto.LoginRequest;
 import com.proyectoarq.model.Boleta;
-import com.proyectoarq.model.Rol;
-import com.proyectoarq.model.Usuario;
-import com.proyectoarq.repository.UsuarioRepository;
+import com.proyectoarq.repository.BoletaRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class TracerBulletTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private MockMvc mockMvc;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private BoletaRepository boletaRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setup() {
-        usuarioRepository.deleteAll();
-        Usuario driver = Usuario.builder()
-                .nombre("Chofer Test")
-                .correo("chofer@test.com")
-                .contraseña(passwordEncoder.encode("password123"))
-                .rol(Rol.CHOFER)
-                .build();
-        usuarioRepository.save(driver);
+        boletaRepository.deleteAll();
     }
 
     @Test
-    void testFirstTracerBullet() {
-        // Paso 1: Auth
-        LoginRequest loginRequest = new LoginRequest("chofer@test.com", "password123");
-        ResponseEntity<AuthResponse> authResponse = restTemplate.postForEntity("/api/auth/login", loginRequest, AuthResponse.class);
-        assertEquals(HttpStatus.OK, authResponse.getStatusCode());
-        String jwt = authResponse.getBody().getJwt();
-        assertNotNull(jwt);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(jwt);
-
-        // Paso 2: Creación de Boleta
+    @WithMockUser(roles = "ADMIN")
+    void testBoletaLifecycle() throws Exception {
+        // 1. Creación de Boleta
         Boleta boleta = Boleta.builder()
                 .carga("Carga de Prueba")
                 .cantidad(100.0)
@@ -64,21 +49,21 @@ public class TracerBulletTest {
                 .estado("PENDIENTE")
                 .build();
         
-        HttpEntity<Boleta> entity = new HttpEntity<>(boleta, headers);
-        ResponseEntity<Boleta> boletaResponse = restTemplate.postForEntity("/api/boletas", entity, Boleta.class);
-        assertEquals(HttpStatus.OK, boletaResponse.getStatusCode());
-        assertNotNull(boletaResponse.getBody().getCodigoQr());
+        String response = mockMvc.perform(post("/api/boletas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(boleta)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.codigoQr").exists())
+                .andReturn().getResponse().getContentAsString();
 
-        // Paso 3: QR (Verificar endpoint)
-        ResponseEntity<byte[]> qrResponse = restTemplate.exchange(
-                "/api/boletas/" + boletaResponse.getBody().getId() + "/qr",
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                byte[].class
-        );
-        assertEquals(HttpStatus.OK, qrResponse.getStatusCode());
-        assertTrue(qrResponse.getBody().length > 0);
+        Boleta savedBoleta = objectMapper.readValue(response, Boleta.class);
+        assertNotNull(savedBoleta.getId());
 
-        System.out.println("First Tracer Bullet validated successfully!");
+        // 2. Verificar endpoint de QR
+        mockMvc.perform(get("/api/boletas/" + savedBoleta.getId() + "/qr"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_PNG_VALUE));
+
+        System.out.println("Boleta Tracer Bullet validated successfully!");
     }
 }

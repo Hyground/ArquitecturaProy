@@ -35,7 +35,8 @@ public class AuthService {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
         final Usuario user = usuarioRepository.findByCorreo(request.getCorreo()).orElse(null);
         final String nombre = (user != null) ? user.getNombre() : userDetails.getUsername();
-        final String jwt = jwtUtil.generateToken(userDetails, nombre);
+        final Long userId = (user != null) ? user.getId() : null;
+        final String jwt = jwtUtil.generateToken(userDetails, nombre, userId);
 
         return new AuthResponse(jwt);
     }

@@ -103,8 +103,15 @@ const ReportsPage: React.FC = () => {
     }
   };
 
-  const generateReport = () => {
-    alert('Función de cierre de periodo en desarrollo. Los datos se han consolidado internamente.');
+  const generateReport = async () => {
+    try {
+      await api.post('/reportes/consolidar');
+      alert('Reporte de cierre generado y consolidado con éxito.');
+      // Opcionalmente recargar datos
+    } catch (err) {
+      console.error('Error generando cierre:', err);
+      alert('Error al consolidar el reporte de cierre');
+    }
   };
 
   if (loading) return <div className="loading-state">Analizando datos logísticos...</div>;

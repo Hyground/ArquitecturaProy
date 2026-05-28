@@ -22,6 +22,12 @@ public class VehiculoController {
         return ResponseEntity.ok(vehiculoRepository.findAll());
     }
 
+    @GetMapping("/supervisor/{supervisorId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'SUPERVISOR')")
+    public ResponseEntity<List<Long>> listarIdsPorSupervisor(@PathVariable Long supervisorId) {
+        return ResponseEntity.ok(vehiculoRepository.findIdsBySupervisorId(supervisorId));
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'SUPERVISOR')")
     public ResponseEntity<Vehiculo> crearVehiculo(@RequestBody Vehiculo vehiculo) {

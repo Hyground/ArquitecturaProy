@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Collections;
 
 @Service
 public class ReporteService {
@@ -36,13 +38,19 @@ public class ReporteService {
     @Autowired
     private BoletaRepository boletaRepository;
 
+    @Autowired
+    private com.proyectoarq.client.FlotaClient flotaClient;
+
+    @Autowired
+    private com.proyectoarq.repository.ViajeRepository viajeRepository;
+
     public List<Boleta> obtenerTodasLasBoletas() {
         return boletaRepository.findAll();
     }
 
-    public void exportarBoletasAPdf(HttpServletResponse response) throws IOException {
-        List<Boleta> boletas = boletaRepository.findAll();
-        Document document = new Document(PageSize.A4.rotate()); // Landscape
+    public void exportarBoletasAPdf(HttpServletResponse response, Long userId, String role, String token) throws IOException {
+        List<Boleta> boletas = filtrarBoletasPorUsuario(userId, role, token);
+        Document document = new Document(PageSize.A4.rotate());
         PdfWriter.getInstance(document, response.getOutputStream());
 
         document.open();
@@ -50,11 +58,13 @@ public class ReporteService {
         font.setSize(18);
         font.setColor(Color.BLUE);
 
-        Paragraph p = new Paragraph("Reporte Detallado de Boletas Logísticas", font);
+        Paragraph p = new Paragraph("Reporte de Boletas Logísticas - " + role, font);
         p.setAlignment(Paragraph.ALIGN_CENTER);
         document.add(p);
+        
+        document.add(new Paragraph("Generado por Usuario ID: " + userId));
 
-        PdfPTable table = new PdfPTable(9); // All 9 fields
+        PdfPTable table = new PdfPTable(9);
         table.setWidthPercentage(100f);
         table.setWidths(new float[]{1.0f, 2.5f, 3.0f, 2.0f, 1.5f, 1.5f, 2.0f, 2.5f, 2.5f});
         table.setSpacingBefore(15);
@@ -66,9 +76,25 @@ public class ReporteService {
         document.close();
     }
 
+    private List<Boleta> filtrarBoletasPorUsuario(Long userId, String role, String token) {
+        if ("ROLE_ADMINISTRADOR".equals(role)) {
+            return boletaRepository.findAll();
+        } else if ("ROLE_SUPERVISOR".equals(role)) {
+            List<Long> vehiculoIds = flotaClient.getVehiculoIdsBySupervisor(userId, token);
+            return boletaRepository.findAll().stream()
+                .filter(b -> {
+                    return viajeRepository.findByBoletaId(b.getId())
+                        .map(v -> vehiculoIds.contains(v.getVehiculoId()))
+                        .orElse(false);
+                })
+                .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
     private void writeHeaderPdf(PdfPTable table) {
         PdfPCell cell = new PdfPCell();
-        cell.setBackgroundColor(new Color(30, 58, 138)); // Darker blue
+        cell.setBackgroundColor(new Color(30, 58, 138));
         cell.setPadding(6);
 
         Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
@@ -99,8 +125,8 @@ public class ReporteService {
         }
     }
 
-    public void exportarBoletasAExcel(HttpServletResponse response) throws IOException {
-        List<Boleta> boletas = boletaRepository.findAll();
+    public void exportarBoletasAExcel(HttpServletResponse response, Long userId, String role, String token) throws IOException {
+        List<Boleta> boletas = filtrarBoletasPorUsuario(userId, role, token);
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Boletas");
 
@@ -144,5 +170,17 @@ public class ReporteService {
         workbook.write(response.getOutputStream());
         workbook.close();
     }
-}
 
+    public com.proyectoarq.model.Reporte consolidarReporte() {
+        List<Boleta> boletas = boletaRepository.findAll();
+        long entregadas = boletas.stream().filter(b -> "ENTREGADO".equals(b.getEstado())).count();
+        
+        com.proyectoarq.model.Reporte reporte = com.proyectoarq.model.Reporte.builder()
+            .fecha(java.time.LocalDateTime.now())
+            .tipo("CIERRE_PERIODO")
+            .datosGenerados("Total: " + boletas.size() + ", Entregadas: " + entregadas)
+            .build();
+            
+        return reporteRepository.save(reporte);
+    }
+}
