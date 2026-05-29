@@ -1,5 +1,6 @@
 package com.proyectoarq.client;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,9 +14,10 @@ import java.util.Collections;
 @Component
 public class FlotaClient {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private RestTemplate restTemplate;
 
-    @Value("${services.flota.url:http://localhost:8083}")
+    @Value("${services.flota.url:https://192.168.1.17:8083}")
     private String flotaServiceUrl;
 
     public List<Long> getVehiculoIdsBySupervisor(Long supervisorId, String token) {

@@ -2,9 +2,9 @@ import axios from 'axios';
 import { db } from './db';
 
 const SERVICES = {
-  USER_CORE: 'http://localhost:8081/api',
-  BOLETAS: 'http://localhost:8082/api',
-  FLOTA: 'http://localhost:8083/api',
+  USER_CORE: 'https://192.168.1.17:8081/api',
+  BOLETAS: 'https://192.168.1.17:8082/api',
+  FLOTA: 'https://192.168.1.17:8083/api',
 };
 
 // Función para determinar a qué microservicio enviar la petición

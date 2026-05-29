@@ -14,7 +14,7 @@ public class UserSyncClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${services.user-core.url:http://localhost:8081}")
+    @Value("${services.user-core.url:http://192.168.1.17:8081}")
     private String userCoreUrl;
 
     public void syncUserData(Long userId, Map<String, Object> data, String token) {

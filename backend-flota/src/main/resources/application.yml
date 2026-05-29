@@ -14,9 +14,18 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+services:
+  user-core:
+    url: https://192.168.1.17:8081
   
 server:
   port: 8083
+  ssl:
+    key-store: keystore.p12
+    key-store-password: password
+    key-store-type: PKCS12
+    key-alias: proyectoarq
 
 jwt:
   secret: 9a4f4342d0a0f44b0d0c3d4f4e5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a

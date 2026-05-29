@@ -72,9 +72,9 @@ echo   SISTEMA EN MARCHA
 echo ========================================
 echo.
 echo Puedes acceder a:
-echo - Frontend: http://localhost:5173 (o el puerto que asigne Vite)
-echo - Backend User: http://localhost:8081
-echo - Backend Boletas: http://localhost:8082
-echo - Backend Flota: http://localhost:8083
+echo - Frontend: https://192.168.1.17:5173 (o el puerto que asigne Vite)
+echo - Backend User: https://192.168.1.17:8081
+echo - Backend Boletas: https://192.168.1.17:8082
+echo - Backend Flota: https://192.168.1.17:8083
 echo.
 pause
