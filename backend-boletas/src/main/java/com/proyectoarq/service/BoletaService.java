@@ -34,6 +34,10 @@ public class BoletaService {
         return boletaRepository.findAll();
     }
 
+    public List<Boleta> listarPorConductor(String nombre) {
+        return boletaRepository.findByConductorNombre(nombre);
+    }
+
     public Boleta obtenerBoleta(Long id) {
         return boletaRepository.findById(id).orElse(null);
     }

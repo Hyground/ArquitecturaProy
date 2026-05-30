@@ -1,5 +1,6 @@
 package com.proyectoarq.client;
 
+import com.proyectoarq.dto.FlotaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -19,6 +20,24 @@ public class FlotaClient {
 
     @Value("${services.flota.url:https://192.168.1.17:8083}")
     private String flotaServiceUrl;
+
+    public List<FlotaDTO> getFlotasBySupervisor(Long supervisorId, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", token);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            FlotaDTO[] flotas = restTemplate.exchange(
+                flotaServiceUrl + "/api/flotas/supervisor/" + supervisorId,
+                HttpMethod.GET,
+                entity,
+                FlotaDTO[].class
+            ).getBody();
+            return flotas != null ? Arrays.asList(flotas) : Collections.emptyList();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
 
     public List<Long> getVehiculoIdsBySupervisor(Long supervisorId, String token) {
         HttpHeaders headers = new HttpHeaders();

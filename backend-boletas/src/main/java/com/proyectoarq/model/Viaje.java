@@ -32,9 +32,12 @@ public class Viaje {
     @Column(name = "fecha_salida")
     private LocalDateTime fechaSalida;
 
-    @Column(name = "fecha_entrega")
-    private LocalDateTime fechaEntrega;
+    @Column(name = "fecha_llegada")
+    private LocalDateTime fechaLlegada;
+
+    @Column(name = "duracion_horas")
+    private Double duracionHoras;
 
     @Column(nullable = false)
-    private String estado; // e.g., PROGRAMADO, EN_RUTA, COMPLETADO
+    private String estado; // e.g., PROGRAMADO, ACEPTADO, EN_RUTA, ENTREGADO
 }

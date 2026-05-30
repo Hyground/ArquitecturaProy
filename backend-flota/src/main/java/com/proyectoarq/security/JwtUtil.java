@@ -50,6 +50,16 @@ public class JwtUtil {
         }
     }
 
+    public Long extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        // userId can be an Integer or Long depending on how Jackson/JJWT parses it
+        Object userId = claims.get("userId");
+        if (userId instanceof Integer) {
+            return ((Integer) userId).longValue();
+        }
+        return claims.get("userId", Long.class);
+    }
+
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }

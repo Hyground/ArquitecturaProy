@@ -18,16 +18,37 @@ public class FlotaController {
     @Autowired
     private FlotaRepository flotaRepository;
 
+    @Autowired
+    private com.proyectoarq.security.JwtUtil jwtUtil;
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'SUPERVISOR')")
-    public ResponseEntity<List<Flota>> listarFlotas(Authentication auth) {
-        List<Flota> flotas = flotaRepository.findAll();
+    public ResponseEntity<List<Flota>> listarFlotas(Authentication auth, @RequestHeader("Authorization") String token) {
+        String role = auth.getAuthorities().iterator().next().getAuthority();
+        List<Flota> flotas;
+
+        if ("ROLE_ADMINISTRADOR".equals(role)) {
+            flotas = flotaRepository.findAll();
+        } else {
+            Long supervisorId = jwtUtil.extractUserId(token.replace("Bearer ", ""));
+            flotas = flotaRepository.findBySupervisorId(supervisorId);
+        }
 
         // Initialize empty lists for vehicles if null to avoid frontend crashes
         flotas.forEach(f -> {
             if (f.getVehiculos() == null) f.setVehiculos(new ArrayList<>());
         });
 
+        return ResponseEntity.ok(flotas);
+    }
+
+    @GetMapping("/supervisor/{supervisorId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'SUPERVISOR')")
+    public ResponseEntity<List<Flota>> listarPorSupervisor(@PathVariable Long supervisorId) {
+        List<Flota> flotas = flotaRepository.findBySupervisorId(supervisorId);
+        flotas.forEach(f -> {
+            if (f.getVehiculos() == null) f.setVehiculos(new ArrayList<>());
+        });
         return ResponseEntity.ok(flotas);
     }
 
@@ -57,4 +78,5 @@ public class FlotaController {
         }
         return ResponseEntity.notFound().build();
     }
+
 }

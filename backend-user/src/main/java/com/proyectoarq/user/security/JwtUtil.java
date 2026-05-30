@@ -14,8 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.stream.Collectors;
+import java.util.List;
+
 @Component
 public class JwtUtil {
+    // ... rest of imports
 
     @Value("${jwt.secret:secretkey_must_be_at_least_32_characters_long_for_hs256}")
     private String secret;
@@ -69,6 +76,18 @@ public class JwtUtil {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public Authentication getAuthentication(String token) {
+        Claims claims = extractAllClaims(token);
+        String username = claims.getSubject();
+        List<Map<String, String>> rolesList = (List<Map<String, String>>) claims.get("roles");
+        
+        List<SimpleGrantedAuthority> authorities = rolesList.stream()
+                .map(roleMap -> new SimpleGrantedAuthority(roleMap.get("authority")))
+                .collect(Collectors.toList());
+
+        return new UsernamePasswordAuthenticationToken(username, null, authorities);
     }
 
     private Key getSigningKey() {

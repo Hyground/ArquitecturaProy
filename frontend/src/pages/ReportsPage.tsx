@@ -14,38 +14,42 @@ const ReportsPage: React.FC = () => {
     enRuta: 0,
     tripsByDriver: {} as Record<string, number>
   });
+  const [recentReports, setRecentReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [bRes, vRes] = await Promise.all([
-          api.get('/boletas'),
-          api.get('/viajes')
-        ]);
-        
-        const boletas = bRes.data || [];
-        const viajes = vRes.data || [];
-        
-        const driverTrips = viajes.reduce((acc: any, v: any) => {
-          const name = v.vehiculo?.placa || 'Desconocido';
-          acc[name] = (acc[name] || 0) + 1;
-          return acc;
-        }, {});
+  const fetchData = async () => {
+    try {
+      const [bRes, vRes, rRes] = await Promise.all([
+        api.get('/boletas'),
+        api.get('/viajes'),
+        api.get('/reportes/consolidar') // This will be a new GET endpoint for history
+      ]);
+      
+      const boletas = bRes.data || [];
+      const viajes = vRes.data || [];
+      
+      const driverTrips = viajes.reduce((acc: any, v: any) => {
+        const name = v.vehiculo?.placa || 'Desconocido';
+        acc[name] = (acc[name] || 0) + 1;
+        return acc;
+      }, {});
 
-        setStats({
-          totalBoletas: boletas.length,
-          entregadas: boletas.filter((b: any) => b.estado === 'ENTREGADO').length,
-          pendientes: boletas.filter((b: any) => b.estado === 'PENDIENTE').length,
-          enRuta: boletas.filter((b: any) => b.estado === 'EN_RUTA').length,
-          tripsByDriver: driverTrips
-        });
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setStats({
+        totalBoletas: boletas.length,
+        entregadas: boletas.filter((b: any) => b.estado === 'ENTREGADO').length,
+        pendientes: boletas.filter((b: any) => b.estado === 'PENDIENTE').length,
+        enRuta: boletas.filter((b: any) => b.estado === 'EN_RUTA').length,
+        tripsByDriver: driverTrips
+      });
+      setRecentReports(Array.isArray(rRes.data) ? rRes.data : []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -207,9 +211,36 @@ const ReportsPage: React.FC = () => {
             <p style={{ color: 'var(--text-muted)', maxWidth: '800px' }}>
               El sistema registra un rendimiento de entrega del {efficiency}% sobre un total de {stats.totalBoletas} boletas emitidas. 
               Actualmente hay {stats.enRuta} unidades en ruta y {stats.pendientes} pedidos esperando asignación. 
-              Se recomienda optimizar las rutas para las unidades con mayor carga de trabajo.
             </p>
           </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: '3rem' }}>
+        <h3 style={{ marginBottom: '1.5rem' }}>Historial de Cierres Consolidados</h3>
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead style={{ background: 'rgba(255,255,255,0.03)' }}>
+              <tr>
+                <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.8rem', color: 'var(--text-muted)' }}>FECHA</th>
+                <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.8rem', color: 'var(--text-muted)' }}>TIPO</th>
+                <th style={{ padding: '1rem', textAlign: 'left', fontSize: '0.8rem', color: 'var(--text-muted)' }}>DETALLES</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentReports.length === 0 ? (
+                <tr><td colSpan={3} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No hay cierres registrados.</td></tr>
+              ) : (
+                recentReports.map(r => (
+                  <tr key={r.id} style={{ borderTop: '1px solid var(--border)' }}>
+                    <td style={{ padding: '1rem', color: 'white' }}>{new Date(r.fecha).toLocaleString()}</td>
+                    <td style={{ padding: '1rem' }}><span className="badge" style={{ background: 'var(--primary-glow)', color: 'var(--primary)' }}>{r.tipo}</span></td>
+                    <td style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>{r.datosGenerados}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 

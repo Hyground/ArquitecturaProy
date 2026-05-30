@@ -61,4 +61,9 @@ public class ReporteController {
     public ResponseEntity<Reporte> consolidarReporte() {
         return ResponseEntity.ok(reporteService.consolidarReporte());
     }
+
+    @GetMapping("/consolidar")
+    public ResponseEntity<java.util.List<Reporte>> listarReportes() {
+        return ResponseEntity.ok(reporteService.obtenerTodosLosReportes());
+    }
 }

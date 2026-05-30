@@ -11,8 +11,8 @@ const SERVICES = {
 const getBaseURL = (url: string | undefined): string => {
   if (!url) return SERVICES.BOLETAS;
   if (url.startsWith('/auth') || url.startsWith('/usuarios')) return SERVICES.USER_CORE;
-  if (url.startsWith('/boletas') || url.startsWith('/viajes')) return SERVICES.BOLETAS;
-  if (url.startsWith('/flotas') || url.startsWith('/vehiculos') || url.startsWith('/reportes')) return SERVICES.FLOTA;
+  if (url.startsWith('/boletas') || url.startsWith('/viajes') || url.startsWith('/reportes')) return SERVICES.BOLETAS;
+  if (url.startsWith('/flotas') || url.startsWith('/vehiculos')) return SERVICES.FLOTA;
   return SERVICES.BOLETAS; // Default
 };
 
@@ -25,6 +25,11 @@ api.interceptors.request.use((config) => {
   }
   
   // Encaminamiento dinámico basado en la ruta
+  // Evitar duplicar si ya tiene una URL completa
+  if (config.url && (config.url.startsWith('http://') || config.url.startsWith('https://'))) {
+    return config;
+  }
+
   const baseURL = getBaseURL(config.url);
   config.url = `${baseURL}${config.url}`;
   

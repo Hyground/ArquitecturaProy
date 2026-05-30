@@ -39,4 +39,13 @@ public class Boleta {
 
     @Column(nullable = false)
     private String destino;
+
+    @Column(name = "conductor_nombre")
+    private String conductorNombre;
+
+    @Column(name = "vehiculo_placa")
+    private String vehiculoPlaca;
+
+    @Column(name = "supervisor_nombre")
+    private String supervisorNombre;
 }

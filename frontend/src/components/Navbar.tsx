@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Truck, Users, BarChart3, ShieldCheck, LogOut, Package } from 'lucide-react';
+import { LayoutDashboard, Truck, Users, BarChart3, ShieldCheck, LogOut, Package, QrCode, History as HistoryIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import SuperScanner from './SuperScanner';
 
 interface NavbarProps {
   layout: 'mobile' | 'desktop';
@@ -9,6 +10,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ layout }) => {
   const { logout, user } = useAuth();
+  const [showScanner, setShowScanner] = useState(false);
 
   const navClass = layout === 'desktop' ? 'sidebar-nav' : 'bottom-nav';
 
@@ -20,43 +22,65 @@ const Navbar: React.FC<NavbarProps> = ({ layout }) => {
   );
 
   return (
-    <nav className={navClass}>
-      {layout === 'desktop' && (
-        <div className="sidebar-header">
-          <div className="logo-area">
-            <Package color="var(--primary)" size={32} />
-            <h2>Trazabilidad</h2>
+    <>
+      <nav className={navClass}>
+        {layout === 'desktop' && (
+          <div className="sidebar-header">
+            <div className="logo-area">
+              <Package color="var(--primary)" size={32} />
+              <h2>Trazabilidad</h2>
+            </div>
+            <div className="user-info">
+              <p className="user-name">{user?.nombre}</p>
+              <p className="user-role">{user?.rol}</p>
+            </div>
           </div>
-          <div className="user-info">
-            <p className="user-name">{user?.nombre}</p>
-            <p className="user-role">{user?.rol}</p>
-          </div>
+        )}
+
+        <div className="nav-links">
+          <NavItem to="/dashboard" icon={LayoutDashboard} label="Panel" />
+
+          {(user?.rol === 'ADMINISTRADOR' || user?.rol === 'SUPERVISOR') && (
+            <>
+              <NavItem to="/fleet" icon={ShieldCheck} label="Flota" />
+              <NavItem to="/reports" icon={BarChart3} label="Reportes" />
+              <button className="nav-item btn-scanner-nav" onClick={() => setShowScanner(true)}>
+                <QrCode size={layout === 'desktop' ? 20 : 22} />
+                <span>Escanear</span>
+              </button>
+            </>
+          )}
+
+          {user?.rol === 'ADMINISTRADOR' && (
+            <NavItem to="/users" icon={Users} label="Usuarios" />
+          )}
+
+          <NavItem to="/driver" icon={Truck} label="Viajes" />
+          <NavItem to="/history" icon={HistoryIcon} label="Historial" />
         </div>
-      )}
 
-      <div className="nav-links">
-        <NavItem to="/dashboard" icon={LayoutDashboard} label="Panel" />
+        <button onClick={logout} className="logout-btn">
+          <LogOut size={20} />
+          {layout === 'desktop' && <span>Cerrar Sesión</span>}
+        </button>
+      </nav>
 
-        {(user?.rol === 'ADMINISTRADOR' || user?.rol === 'SUPERVISOR') && (
-          <>
-            <NavItem to="/fleet" icon={ShieldCheck} label="Flota" />
-            <NavItem to="/reports" icon={BarChart3} label="Reportes" />
-          </>
-        )}
-
-        {user?.rol === 'ADMINISTRADOR' && (
-          <NavItem to="/users" icon={Users} label="Usuarios" />
-        )}
-
-        <NavItem to="/driver" icon={Truck} label="Viajes" />
-      </div>
-
-      <button onClick={logout} className="logout-btn">
-        <LogOut size={20} />
-        {layout === 'desktop' && <span>Cerrar Sesión</span>}
-      </button>
+      {showScanner && <SuperScanner onClose={() => setShowScanner(false)} />}
 
       <style>{`
+        .btn-scanner-nav {
+          background: none;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          color: var(--text-muted);
+          transition: var(--transition);
+        }
+        .btn-scanner-nav:hover { color: white; }
+        .bottom-nav .btn-scanner-nav { flex-direction: column; font-size: 0.65rem; font-weight: 700; gap: 4px; }
+        .sidebar-nav .btn-scanner-nav { padding: 1rem; border-radius: var(--radius-md); gap: 12px; font-size: 0.95rem; width: 100%; text-align: left; }
+        
         .sidebar-nav {
           position: fixed;
           left: 0;
@@ -184,7 +208,7 @@ const Navbar: React.FC<NavbarProps> = ({ layout }) => {
           font-size: 0.65rem;
         }
       `}</style>
-    </nav>
+    </>
   );
 };
 

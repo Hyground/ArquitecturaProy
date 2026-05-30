@@ -1,0 +1,68 @@
+# 🚀 Guía de Arranque Rápido - ProyectoArq
+
+Este documento contiene las instrucciones necesarias para levantar tanto el **Backend** como el **Frontend** de forma forzada, utilizando la configuración local de Maven.
+
+---
+
+## 🛠️ Estado Actual del Sistema
+- **Java:** Versión 21 (C:\Program Files\Java\jdk-21.0.10)
+- **Maven Local:** Instalado en `.\apache-maven-3.9.6`
+- **Frontend:** React + Vite (Puerto 5173)
+- **Backend:** Spring Boot (Puerto 8080)
+
+---
+
+## ⚡ Comandos de Inicio (Copia y Pega)
+
+### 1. Iniciar Backend (Spring Boot)
+Abre una terminal PowerShell en la raíz del proyecto:
+```powershell
+# Configurar Maven local y arrancar
+$env:PATH += ";$PWD\apache-maven-3.9.6\bin"
+cd backend
+mvn spring-boot:run
+```
+
+### 2. Iniciar Frontend (Vite)
+Abre **otra** terminal PowerShell en la raíz del proyecto:
+```powershell
+cd frontend
+npm run dev
+```
+
+---
+
+## 📝 Script de Inicio Automático
+Si quieres arrancar ambos con un solo clic, crea un archivo llamado `iniciar_todo.ps1` con este contenido:
+
+```powershell
+# Definir ruta de Maven local
+$env:PATH += ";$PWD\apache-maven-3.9.6\bin"
+
+# Iniciar Backend en una nueva ventana
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd backend; mvn spring-boot:run"
+
+# Iniciar Frontend en una nueva ventana
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd frontend; npm run dev"
+```
+
+---
+
+## 🔐 Credenciales y Acceso
+- **URL Frontend:** [http://localhost:5173](http://localhost:5173)
+- **URL Backend:** [http://localhost:8080](http://localhost:8080)
+- **DB (H2 Console):** [http://localhost:8080/h2-console](http://localhost:8080/h2-console) (Solo si está en modo test)
+
+| Usuario | Contraseña | Rol |
+| :--- | :--- | :--- |
+| `admin@test.com` | `admin123` | Administrador |
+| `supervisor@test.com` | `super123` | Supervisor |
+| `juan@test.com` | `juan123` | Chofer |
+
+---
+
+## ⚠️ Notas Importantes
+- **No cierres las terminales** mientras usas la aplicación.
+- Si el backend falla por conexión a base de datos, asegúrate de que **PostgreSQL** esté corriendo y la base de datos `proyectoarq_db` exista.
+- La instalación de Maven es local (`.\apache-maven-3.9.6`), no es necesario instalarlo en Windows globalmente.
+        

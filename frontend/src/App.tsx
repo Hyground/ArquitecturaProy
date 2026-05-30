@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import UserManagement from './pages/UserManagement';
 import FleetManagement from './pages/FleetManagement';
 import ReportsPage from './pages/ReportsPage';
+import HistoryPage from './pages/HistoryPage';
 import { WifiOff } from 'lucide-react';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
@@ -37,9 +38,8 @@ const PrivateRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = 
     return <Navigate to="/dashboard" />;
   }
 
-  // Determine layout based on role and screen size
-  // Chofer always uses mobile layout. Admin/Supervisor uses desktop layout on large screens.
-  const layoutClass = (user?.rol === 'CHOFER' || isMobile) ? 'mobile' : 'desktop';
+  // Determine layout based on screen size ONLY (as requested: "que sea igual a la de los otros")
+  const layoutClass = isMobile ? 'mobile' : 'desktop';
 
   return (
     <div className={`app-container ${layoutClass}`}>
@@ -91,6 +91,14 @@ function App() {
             element={
               <PrivateRoute roles={['ADMINISTRADOR', 'SUPERVISOR']}>
                 <ReportsPage />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/history" 
+            element={
+              <PrivateRoute>
+                <HistoryPage />
               </PrivateRoute>
             } 
           />

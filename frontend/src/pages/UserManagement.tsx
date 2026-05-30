@@ -140,18 +140,20 @@ const UserManagement: React.FC = () => {
       )}
 
       {showModal && (
-        <div className="modal-overlay" style={{ zIndex: 10000 }} onClick={() => setShowModal(false)}>
-          <div className="modal animate-slide-up" style={{ zIndex: 10001, maxWidth: '450px' }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3 style={{ margin: 0 }}>{editingUser ? 'Editar Perfil' : 'Nuevo Usuario'}</h3>
-              <button onClick={() => setShowModal(false)} className="icon-btn"><X size={20}/></button>
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal" style={{ maxWidth: '480px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{editingUser ? 'Editar Perfil' : 'Nuevo Usuario'}</h3>
+              <button onClick={() => setShowModal(false)} className="btn-icon"><X size={20}/></button>
             </div>
             <form onSubmit={handleSubmit}>
               
-              <ImageUpload 
-                value={formData.fotoPerfil} 
-                onChange={(val) => setFormData({...formData, fotoPerfil: val})} 
-              />
+              <div style={{ marginBottom: '2rem' }}>
+                <ImageUpload 
+                  value={formData.fotoPerfil} 
+                  onChange={(val) => setFormData({...formData, fotoPerfil: val})} 
+                />
+              </div>
 
               <div className="input-group">
                 <label>Nombre Completo</label>
@@ -173,9 +175,9 @@ const UserManagement: React.FC = () => {
                   <option value="CHOFER">Chofer</option>
                 </select>
               </div>
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem' }}>
                 <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary" style={{ flex: 1 }}>Cancelar</button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 2 }}>{editingUser ? 'Actualizar' : 'Crear Usuario'}</button>
+                <button type="submit" className="btn btn-primary" style={{ flex: 2 }}>{editingUser ? 'Actualizar Perfil' : 'Crear Usuario'}</button>
               </div>
             </form>
           </div>

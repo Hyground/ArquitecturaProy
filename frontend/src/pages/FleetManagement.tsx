@@ -211,8 +211,12 @@ const FleetManagement: React.FC = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <h3 style={{ margin: 0, color: 'white' }}>{v.placa}</h3>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                      <button onClick={() => handleEditVehiculo(v)} className="icon-btn primary" title="Editar"><Edit2 size={16} /></button>
-                      {isAdmin && <button onClick={() => handleDeleteVehiculo(v.id)} className="icon-btn danger" title="Eliminar"><Trash2 size={16} /></button>}
+                      {(isAdmin || user?.rol === 'SUPERVISOR') && (
+                        <button onClick={() => handleEditVehiculo(v)} className="icon-btn primary" title="Editar"><Edit2 size={16} /></button>
+                      )}
+                      {isAdmin && (
+                        <button onClick={() => handleDeleteVehiculo(v.id)} className="icon-btn danger" title="Eliminar"><Trash2 size={16} /></button>
+                      )}
                     </div>
                   </div>
                   <p className="vehicle-subtitle">{v.marca} {v.modelo} ({v.anio})</p>
@@ -226,19 +230,22 @@ const FleetManagement: React.FC = () => {
 
           {/* Modal Vehiculo */}
           {showVehiculoModal && (
-            <div className="modal-overlay" style={{ zIndex: 10000 }} onClick={() => setShowVehiculoModal(false)}>
-              <div className="modal animate-slide-up" style={{ zIndex: 10001 }} onClick={e => e.stopPropagation()}>
-                <h3>{editingItem ? 'Editar Camión' : 'Nuevo Camión'}</h3>
+            <div className="modal-overlay" onClick={() => setShowVehiculoModal(false)}>
+              <div className="modal" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>{editingItem ? 'Editar Camión' : 'Nuevo Camión'}</h3>
+                  <button onClick={() => setShowVehiculoModal(false)} className="btn-icon"><X size={20}/></button>
+                </div>
                 <form onSubmit={handleVehiculoSubmit}>
                   <ImageUpload value={vehiculoFormData.foto} onChange={val => setVehiculoFormData({...vehiculoFormData, foto: val})} />
-                  <div className="input-group"><label>Placa</label><input required value={vehiculoFormData.placa} onChange={e => setVehiculoFormData({...vehiculoFormData, placa: e.target.value})} /></div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="input-group"><label>Placa del Vehículo</label><input required value={vehiculoFormData.placa} onChange={e => setVehiculoFormData({...vehiculoFormData, placa: e.target.value})} placeholder="Ej: P-123ABC" /></div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
                     <div className="input-group"><label>Marca</label><input required value={vehiculoFormData.marca} onChange={e => setVehiculoFormData({...vehiculoFormData, marca: e.target.value})} /></div>
                     <div className="input-group"><label>Modelo</label><input required value={vehiculoFormData.modelo} onChange={e => setVehiculoFormData({...vehiculoFormData, modelo: e.target.value})} /></div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
                     <div className="input-group"><label>Año</label><input type="number" value={vehiculoFormData.anio} onChange={e => setVehiculoFormData({...vehiculoFormData, anio: Number(e.target.value)})} /></div>
-                    <div className="input-group"><label>Estado</label>
+                    <div className="input-group"><label>Estado Operativo</label>
                       <select value={vehiculoFormData.estado} onChange={e => setVehiculoFormData({...vehiculoFormData, estado: e.target.value})}>
                         <option value="DISPONIBLE">Disponible</option>
                         <option value="EN_VIAJE">En Viaje</option>
@@ -247,15 +254,15 @@ const FleetManagement: React.FC = () => {
                     </div>
                   </div>
                   <div className="input-group">
-                    <label>Chofer</label>
+                    <label>Conductor Asignado</label>
                     <select value={vehiculoFormData.conductorId} onChange={e => setVehiculoFormData({...vehiculoFormData, conductorId: e.target.value})}>
                       <option value="">-- Sin asignar --</option>
                       {choferes.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
                     </select>
                   </div>
-                  <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                  <div style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem' }}>
                     <button type="button" onClick={() => setShowVehiculoModal(false)} className="btn btn-secondary" style={{ flex: 1 }}>Cancelar</button>
-                    <button type="submit" className="btn btn-primary" style={{ flex: 2 }}>Guardar</button>
+                    <button type="submit" className="btn btn-primary" style={{ flex: 2 }}>Guardar Cambios</button>
                   </div>
                 </form>
               </div>
@@ -349,11 +356,11 @@ const FleetManagement: React.FC = () => {
 
           {/* Modal Flota */}
           {showFlotaModal && (
-            <div className="modal-overlay" style={{ zIndex: 10000 }} onClick={() => setShowFlotaModal(false)}>
-              <div className="modal animate-slide-up" style={{ zIndex: 10001, maxWidth: '450px' }} onClick={e => e.stopPropagation()}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                  <h3 style={{ margin: 0 }}>{editingItem ? 'Editar Flota' : 'Nueva Flota'}</h3>
-                  <button onClick={() => setShowFlotaModal(false)} className="icon-btn"><X size={20}/></button>
+            <div className="modal-overlay" onClick={() => setShowFlotaModal(false)}>
+              <div className="modal" style={{ maxWidth: '450px' }} onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>{editingItem ? 'Editar Flota' : 'Nueva Flota'}</h3>
+                  <button onClick={() => setShowFlotaModal(false)} className="btn-icon"><X size={20}/></button>
                 </div>
                 <form onSubmit={handleFlotaSubmit}>
                   <div className="input-group">
@@ -367,7 +374,7 @@ const FleetManagement: React.FC = () => {
                       {supervisores.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
                     </select>
                   </div>
-                  <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                  <div style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem' }}>
                     <button type="button" onClick={() => setShowFlotaModal(false)} className="btn btn-secondary" style={{ flex: 1 }}>Cancelar</button>
                     <button type="submit" className="btn btn-primary" style={{ flex: 2 }}>{editingItem ? 'Guardar Cambios' : 'Crear Flota'}</button>
                   </div>
